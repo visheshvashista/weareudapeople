@@ -201,7 +201,7 @@ workflows:
       - create_inventory:
           requires: [deploy-infrastructure]
       #- check_inventory:
-         requires: [create_inventory]
+      #   requires: [create_inventory]
       - configure-infrastructure:
           requires: [create_inventory]
           
