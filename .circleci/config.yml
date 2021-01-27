@@ -129,7 +129,7 @@ jobs:
           paths: 
             - project/.circleci/ansible/inventory.txt
      
-  check-inventory:
+  check_inventory:
     docker:
       - image: amazon/aws-cli
     steps:
