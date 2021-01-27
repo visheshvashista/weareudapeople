@@ -115,9 +115,9 @@ deploy-infrastructure:
           name: Add back-end ip to ansible inventory
           command: |
 		    echo "[all]" > inventory
-			aws ec2 describe-instances \
-			--query 'Reservations[*].Instances[*].PublicIpAddress' \
-			--output text >> inventory
+                    aws ec2 describe-instances \
+                      --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                      --output text >> inventory
 
 workflows:
   default:
