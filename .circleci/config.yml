@@ -75,7 +75,6 @@ jobs:
           command: |
             cd frontend
             npm audit --audit-level=critical
-
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -131,15 +130,28 @@ jobs:
                --query 'Reservations[*].Instances[*].PublicIpAddress' \
                --output text >> .circleci/ansible/inventory.txt
                
-            #   aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text > dns.txt
-            #   DNS=`cat dns.txt`
+               aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text > dns.txt
             
       - persist_to_workspace:
           root: ~/project
           paths: 
             - .circleci/ansible/inventory.txt
+            - .circleci/ansible/dns.txt
+            
+  check_inventory:
+    working_directory: ~/project
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout            
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Check inventory file exists
+          command: |
+            cat ./.circleci/ansible/inventory.txt
   
-    configure_infrastructure:
+    configure-infrastructure:
       docker:
        python:3.7-alpine3.11
       steps:
@@ -186,6 +198,7 @@ workflows:
               only: [main]
       - create_inventory:
           requires: [deploy-infrastructure]
-      - configure_infrastructure:
+      - check_inventory:
           requires: [create_inventory]
-          
+      - configure-infrastructure:
+          requires: [check_inventory]
