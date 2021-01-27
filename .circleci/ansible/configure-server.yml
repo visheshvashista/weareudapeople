@@ -17,4 +17,3 @@
 
   roles:
     - configure-server
-    - deploy
