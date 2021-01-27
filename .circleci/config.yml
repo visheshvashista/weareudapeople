@@ -133,7 +133,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths: 
-            - project/.circleci/ansible/inventory.txt
+            - .circleci/ansible/inventory.txt
             
   check_inventory:
     docker:
@@ -145,7 +145,7 @@ jobs:
       - run:
           name: Check inventory file exists
           command: |
-            cat project/.circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
       
 workflows:
   default:
