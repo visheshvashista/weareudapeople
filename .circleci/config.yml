@@ -153,10 +153,10 @@ jobs:
           command: |
             cat ./.circleci/ansible/inventory.txt
   
-  configure-infrastructure:
-     docker:
+    configure-infrastructure:
+      docker:
        python:3.7-alpine3.11
-    steps:
+      steps:
       - checkout
       - add_ssh_keys:
           fingerprints: ["fb:92:3b:fa:49:6c:96:aa:dd:78:39:3d:d9:a7:75:92"] # You can get this ID in the section where you registered the SSH Key
@@ -201,7 +201,7 @@ workflows:
       - create_inventory:
           requires: [deploy-infrastructure]
       #- check_inventory:
-      #    requires: [create_inventory]
+         requires: [create_inventory]
       - configure-infrastructure:
           requires: [create_inventory]
           
