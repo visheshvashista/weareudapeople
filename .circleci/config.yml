@@ -113,6 +113,7 @@ jobs:
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
                   
   create_inventory:
+    working_directory: ~/project
     docker:
       - image: python:3.7-alpine3.11
     steps:
@@ -131,21 +132,22 @@ jobs:
                --output text >> inventory.txt
                       
       - persist_to_workspace:
-          root: ~/
+          root: ~/project
           paths: 
             - .circleci/ansible/inventory.txt
             
   check_inventory:
+    working_directory: ~/project
     docker:
       - image: python:3.7-alpine3.11
     steps:
       - checkout            
       - attach_workspace:
-          at: ~/
+          at: ~/project
       - run:
           name: Check inventory file exists
           command: |
-            cat .circleci/ansible/inventory.txt
+            cat ./.circleci/ansible/inventory.txt
       
 workflows:
   default:
