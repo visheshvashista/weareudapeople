@@ -139,19 +139,6 @@ jobs:
           paths: 
             - .circleci/ansible/inventory.txt
             - .circleci/ansible/dns.txt
-            
-  check_inventory:
-    working_directory: ~/project
-    docker:
-      - image: python:3.7-alpine3.11
-    steps:
-      - checkout            
-      - attach_workspace:
-          at: ~/project
-      - run:
-          name: Check inventory file exists
-          command: |
-            cat ./.circleci/ansible/inventory.txt
   
     configure_infrastructure:
       docker:
@@ -200,8 +187,6 @@ workflows:
               only: [main]
       - create_inventory:
           requires: [deploy-infrastructure]
-      #- check_inventory:
-      #   requires: [create_inventory]
       - configure_infrastructure:
           requires: [create_inventory]
           
