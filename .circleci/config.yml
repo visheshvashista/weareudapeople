@@ -151,7 +151,7 @@ jobs:
           command: |
             cat ./.circleci/ansible/inventory.txt
   
-    configure-infrastructure:
+    configure_infrastructure:
       docker:
         image: python:3.7-alpine3.11
       steps:
@@ -200,5 +200,5 @@ workflows:
           requires: [deploy-infrastructure]
       - check_inventory:
           requires: [create_inventory]
-      - configure-infrastructure:
+      - configure_infrastructure:
           requires: [check_inventory]
