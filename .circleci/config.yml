@@ -124,19 +124,21 @@ jobs:
             pip install awscli
             
       - run:
-          name: Add back-end ip to ansible inventory
+          name: Add back-end ip to ansible inventory and create a file for backend DNS name
           command: |
              echo "[all]" > .circleci/ansible/inventory.txt
                aws ec2 describe-instances \
                --query 'Reservations[*].Instances[*].PublicIpAddress' \
                --output text >> .circleci/ansible/inventory.txt
-               DNS="$(aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text)"
-               echo $DNS
-                      
+               
+               aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text > dns.txt
+            #   DNS=`cat dns.txt`
+            
       - persist_to_workspace:
           root: ~/project
           paths: 
             - .circleci/ansible/inventory.txt
+            - .circleci/ansible/dns.txt
             
   check_inventory:
     working_directory: ~/project
@@ -150,6 +152,32 @@ jobs:
           name: Check inventory file exists
           command: |
             cat ./.circleci/ansible/inventory.txt
+  
+  configure-infrastructure:
+     docker:
+       python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["fb:92:3b:fa:49:6c:96:aa:dd:78:39:3d:d9:a7:75:92"] # You can get this ID in the section where you registered the SSH Key
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible # install the dependencies needed for your playbook
+      - run:
+          name: Configure server
+          command: |
+            command: |
+            cd .circleci/ansible
+            ls -lrt            
+      - run:
+          name: Configure server
+          command: |
+            command: |
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt  main.yml
       
 workflows:
   default:
@@ -172,5 +200,8 @@ workflows:
               only: [main]
       - create_inventory:
           requires: [deploy-infrastructure]
-      - check_inventory:
+      #- check_inventory:
+      #    requires: [create_inventory]
+      - configure-infrastructure:
           requires: [create_inventory]
+          
