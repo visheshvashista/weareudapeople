@@ -177,7 +177,7 @@ jobs:
             
   run_migration:
     docker:
-      - image: cimg/node:15.6.0
+      - image: circleci/node:13.8.0
     environment:
       migration_status: 0
     steps:
@@ -186,6 +186,8 @@ jobs:
           name: Run migrations
           command: |
             cd backend
+            ls -lrt
+            npm i
             npm run migrations > output.log
             migration_status = grep -c "has been executed successfully" output.log
             
