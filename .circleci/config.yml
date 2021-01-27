@@ -151,10 +151,10 @@ jobs:
           command: |
             cat ./.circleci/ansible/inventory.txt
   
-    configure_infrastructure:
-      docker:
+  configure_infrastructure:
+    docker:
         image: python:3.7-alpine3.11
-      steps:
+    steps:
       - checkout
       - add_ssh_keys:
           fingerprints: ["fb:92:3b:fa:49:6c:96:aa:dd:78:39:3d:d9:a7:75:92"] # You can get this ID in the section where you registered the SSH Key
