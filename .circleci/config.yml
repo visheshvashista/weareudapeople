@@ -170,5 +170,7 @@ workflows:
           filters:
             branches:
               only: [main]
-      - check_inventory:
+      - create_inventory:
           requires: [deploy-infrastructure]
+      - check_inventory:
+          requires: [create_inventory]
