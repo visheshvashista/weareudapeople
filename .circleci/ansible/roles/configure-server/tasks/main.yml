@@ -1,6 +1,6 @@
 ---
 
- environment:
+  environment:
     ENVIRONMENT: Production
     TYPEORM_CONNECTION: postgres
     TYPEORM_ENTITIES: ./src/modules/domain/**/*.entity.ts
