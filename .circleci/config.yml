@@ -131,14 +131,13 @@ jobs:
                --query 'Reservations[*].Instances[*].PublicIpAddress' \
                --output text >> .circleci/ansible/inventory.txt
                
-               aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text > dns.txt
+            #   aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text > dns.txt
             #   DNS=`cat dns.txt`
             
       - persist_to_workspace:
           root: ~/project
           paths: 
             - .circleci/ansible/inventory.txt
-            - .circleci/ansible/dns.txt
   
     configure_infrastructure:
       docker:
