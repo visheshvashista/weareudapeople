@@ -57,7 +57,7 @@ jobs:
       - restore_cache:
           keys: [test-backend-build]
       - run:
-          name: Front-end test cases
+          name: Backend-end test cases
           command: |
             cd backend
             npm install jest
