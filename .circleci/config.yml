@@ -125,7 +125,7 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory and create a file for backend DNS name
           command: |
-             echo "[all]" > .circleci/ansible/inventory.txt
+             echo "[web]" > .circleci/ansible/inventory.txt
                aws ec2 describe-instances \
                --query 'Reservations[*].Instances[*].PublicIpAddress' \
                --output text >> .circleci/ansible/inventory.txt
