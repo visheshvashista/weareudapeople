@@ -93,10 +93,6 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - run:
-          name: update tar package
-          command: |
-            apt install tar 
       - checkout
       - run:
           name: Ensure back-end infrastructure exists
