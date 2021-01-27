@@ -96,7 +96,7 @@ jobs:
       - run:
           name: update tar package
           command: |
-            apt-get install tar 
+            apt install tar 
       - checkout
       - run:
           name: Ensure back-end infrastructure exists
