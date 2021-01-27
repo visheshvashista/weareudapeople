@@ -130,6 +130,8 @@ jobs:
                aws ec2 describe-instances \
                --query 'Reservations[*].Instances[*].PublicIpAddress' \
                --output text >> .circleci/ansible/inventory.txt
+               dns=`aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text`
+               echo $dns
                       
       - persist_to_workspace:
           root: ~/project
