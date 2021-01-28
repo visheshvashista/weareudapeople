@@ -210,28 +210,26 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update
+      - run:
           name: Run migrations
           command: |
             cd backend
             npm run migrations > output.log
             migration_status = grep -c "has been executed successfully" output.log
-            
-      - run: 
-          name: Revert migrations
-          command: |
-            cat /home/circleci/.npm/_logs/*.log
-            npm run migrations:revert
-            migration_status: 0
-          when: on_fail
-          
-      - run:
-          name: Send migration results to memstash
-          command: |
-           if [ migration_status -gt 0 ]
-           then
-             curl -H "Content-Type: text/plain" -H "token: migration-${CIRCLE_WORKFLOW_ID}" --request PUT --data "$migration_status" https://api.memstash.io/values/migrationStatus
-           fi  
-      
+            cat output.log
+            echo $migration_status
+            if [ migration_status -eq 0 ]  
+            then
+              cat /home/circleci/.npm/_logs/*.log
+              npm run migrations:revert
+              migration_status: 0
+              curl -H "Content-Type: text/plain" -H "token: migration-${CIRCLE_WORKFLOW_ID}" --request PUT --data "$migration_status" https://api.memstash.io/values/migrationStatus
+            else  
+              curl -H "Content-Type: text/plain" -H "token: migration-${CIRCLE_WORKFLOW_ID}" --request PUT --data "$migration_status" https://api.memstash.io/values/migrationStatus
+            fi
       - destroy-environment
       
 workflows:
