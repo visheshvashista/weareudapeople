@@ -208,20 +208,20 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt-get update
+            sudo apt-get install awscli
       - run:
           name: Run migrations
           command: |
             cd backend
             npm run migrations 
             echo "has been executed successfully" > output.log
-            migration_status = grep -c "has been executed successfully" output.log
+            $migration_status=`grep -c "has been executed successfully" output.log`
             cat output.log
             echo $migration_status
-            if [ migration_status -eq 0 ]  
+            if [ $migration_status -eq 0 ]  
             then
               cat /home/circleci/.npm/_logs/*.log
               npm run migrations:revert
-              migration_status: 0
               curl -H "Content-Type: text/plain" -H "token: migration-${CIRCLE_WORKFLOW_ID}" --request PUT --data "$migration_status" https://api.memstash.io/values/migrationStatus
             else  
               curl -H "Content-Type: text/plain" -H "token: migration-${CIRCLE_WORKFLOW_ID}" --request PUT --data "$migration_status" https://api.memstash.io/values/migrationStatus
