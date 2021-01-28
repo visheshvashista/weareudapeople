@@ -188,8 +188,12 @@ jobs:
             cd backend
             ls -lrt
             npm audit fix --audit-level=critical --force
-            npm run migrations > output.log
+            npm run migrations
             migration_status = grep -c "has been executed successfully" output.log
+            
+      - run: name: Revert migrations
+          command: |
+            cat /home/circleci/.npm/_logs/*.log
             
       - run:
           name: Revert migrations
