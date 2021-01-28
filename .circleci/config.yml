@@ -318,4 +318,4 @@ workflows:
       - run_migrations:
           requires: [configure_infrastructure]
       - deploy-frontend:
-          requires: [run-migrations]
+          requires: [run_migrations]
