@@ -46,6 +46,7 @@ jobs:
           name: Front-end test cases
           command: |
             cd frontend
+            npm install jest
             npm run test   
             
   test-backend:
