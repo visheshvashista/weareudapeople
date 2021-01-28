@@ -159,15 +159,9 @@ jobs:
   create_inventory:
     working_directory: ~/project
     docker:
-      - image: python:3.7-alpine3.11
+      - image: amazon/aws-cli
     steps:
-      - checkout
-      - run:
-          name: Add AWS CLI
-          command: |
-            pip install awscli
-            sudo apt-get install curl
-            
+      - checkout 
       - run:
           name: Add back-end ip to ansible inventory and upload dnsname to memstash
           command: |
