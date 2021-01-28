@@ -41,13 +41,12 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [test-frontend-build]
+          keys: [frontend-build]
       - run:
           name: Front-end test cases
           command: |
             cd frontend
-            npm install jest
-            npm test   
+            npm run test   
             
   test-backend:
     docker:
@@ -55,13 +54,12 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [test-backend-build]
+          keys: [backend-build]
       - run:
           name: Backend-end test cases
           command: |
             cd backend
-            npm install jest
-            npm test
+            npm run test
             
   scan-frontend:
     docker:
@@ -74,7 +72,7 @@ jobs:
           name: Frontend vulnerability scan
           command: |
             cd frontend
-            npm audit --audit-level=critical
+            npm audit fix --audit-level=critical --force
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -182,29 +180,23 @@ jobs:
       migration_status: 0
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
             cd backend
-            ls -lrt
-            npm audit fix --audit-level=critical --force
-            npm run migrations
+            npm run migrations > output.log
             migration_status = grep -c "has been executed successfully" output.log
             
       - run: 
           name: Revert migrations
           command: |
             cat /home/circleci/.npm/_logs/*.log
-          when: on_fail
-            
-            
-      - run:
-          name: Revert migrations
-          command: |
             npm run migrations:revert
             migration_status: 0
           when: on_fail
-
+          
       - run:
           name: Send migration results to memstash
           command: |
