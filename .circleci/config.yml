@@ -166,7 +166,7 @@ jobs:
           name: Add AWS CLI
           command: |
             pip install awscli
-            yum install curl
+            sudo apt-get install curl
             
       - run:
           name: Add back-end ip to ansible inventory and upload dnsname to memstash
@@ -186,6 +186,7 @@ jobs:
           paths: 
             - .circleci/ansible/inventory.txt
             - .circleci/ansible/dns.txt
+      - destroy-environment
             
   check_inventory:
     working_directory: ~/project
@@ -199,6 +200,7 @@ jobs:
           name: Check inventory file exists
           command: |
             cat ./.circleci/ansible/inventory.txt
+      - destroy-environment
   
   configure_infrastructure:
     docker:
