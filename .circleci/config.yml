@@ -22,9 +22,8 @@ commands:
           when: on_fail
           command: |
             aws s3 rm s3://<< parameters.bucket-name >> --recursive
-            aws cloudformation delete-stack --stack-name << parameters.frontend-stack-name >>
-            aws cloudformation delete-stack --stack-name << parameters.backend-stack-name >>
-
+            aws cloudformation delete-stack --stack-name << parameters.frontend-stack >>
+            aws cloudformation delete-stack --stack-name << parameters.backend-stack >>
 jobs:
   build-frontend:
     docker:
