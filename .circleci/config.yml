@@ -4,24 +4,19 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
+      backend-stack:
+        description: backend stack name
+        type: string
+        default: udapeople-backendstack-${CIRCLE_WORKFLOW_ID}
       frontend-stack:
         description: frontend stack name
         type: string
-        default: udapeople-backendstack-${CIRCLE_WORKFLOW_ID}
-      backend-stack:
-        description: frontend stack name
-        type: string
-        default: udapeople-backendstack-${CIRCLE_WORKFLOW_ID}
-      bucket-name:
-        description: frontend S3 bucket name
-        type: string
-        default: udapeople-"${CIRCLE_WORKFLOW_ID}"
+        default: udapeople-frontendstack-${CIRCLE_WORKFLOW_ID}
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm s3://<< parameters.bucket-name >> --recursive
             aws cloudformation delete-stack --stack-name << parameters.frontend-stack >>
             aws cloudformation delete-stack --stack-name << parameters.backend-stack >>
 jobs:
@@ -217,7 +212,8 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            npm run migrations > output.log
+            npm run migrations 
+            echo "has been executed successfully" > output.log
             migration_status = grep -c "has been executed successfully" output.log
             cat output.log
             echo $migration_status
