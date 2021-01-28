@@ -225,7 +225,7 @@ jobs:
       
       - destroy-environment
             
-  run_migration:
+  run_migrations:
     docker:
       - image: circleci/node:13.8.0
     environment:
@@ -315,5 +315,7 @@ workflows:
           requires: [create_inventory]
       - configure_infrastructure:
           requires: [check_inventory]
-      - run_migration:
+      - run_migrations:
           requires: [configure_infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
