@@ -213,12 +213,11 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            npm run migrations 
-            echo "has been executed successfully" > output.log
-            $migration_status=`grep -c "has been executed successfully" output.log`
+            npm run migrations > output.log
+            migration_status=`grep -c "has been executed successfully"  output.log`
             cat output.log
             echo $migration_status
-            if [ $migration_status -eq 0 ]  
+            if [[ $migration_status -eq 0 ]]  
             then
               cat /home/circleci/.npm/_logs/*.log
               npm run migrations:revert
