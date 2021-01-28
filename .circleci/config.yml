@@ -270,7 +270,7 @@ jobs:
           name: Install dependencies
           command: |
             yum install -y tar gzip
-            curl -sL https://rpm.nodesource.com/setup_13. | bash -
+            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
             yum install -y nodejs
       - run:
           name: Get API-URL
