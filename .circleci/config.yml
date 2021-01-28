@@ -166,6 +166,7 @@ jobs:
           name: Add AWS CLI
           command: |
             pip install awscli
+            yum install curl
             
       - run:
           name: Add back-end ip to ansible inventory and upload dnsname to memstash
