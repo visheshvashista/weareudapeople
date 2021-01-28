@@ -163,6 +163,10 @@ jobs:
     steps:
       - checkout 
       - run:
+          name: Install dependencies
+          command: |
+            yum install -y tar gzip     
+      - run:
           name: Add back-end ip to ansible inventory and upload dnsname to memstash
           command: |
              echo "[web]" > .circleci/ansible/inventory.txt
