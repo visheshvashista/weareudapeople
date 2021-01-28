@@ -191,9 +191,12 @@ jobs:
             npm run migrations
             migration_status = grep -c "has been executed successfully" output.log
             
-      - run: name: Revert migrations
+      - run: 
+          name: Revert migrations
           command: |
             cat /home/circleci/.npm/_logs/*.log
+          when: on_fail
+            
             
       - run:
           name: Revert migrations
