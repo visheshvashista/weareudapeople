@@ -1,5 +1,30 @@
 version: 2.1
-           
+
+commands:
+  destroy-environment:
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      frontend-stack:
+        description: frontend stack name
+        type: string
+        default: udapeople-backendstack-${CIRCLE_WORKFLOW_ID}
+      backend-stack:
+        description: frontend stack name
+        type: string
+        default: udapeople-backendstack-${CIRCLE_WORKFLOW_ID}
+      bucket-name:
+        description: frontend S3 bucket name
+        type: string
+        default: udapeople-"${CIRCLE_WORKFLOW_ID}"
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            aws s3 rm s3://<< parameters.bucket-name >> --recursive
+            aws cloudformation delete-stack --stack-name << parameters.frontend-stack-name >>
+            aws cloudformation delete-stack --stack-name << parameters.backend-stack-name >>
+
 jobs:
   build-frontend:
     docker:
@@ -98,7 +123,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udapeople \
-              --stack-name "udapeople-backendstack-${CIRCLE_WORKFLOW_ID}" \
+              --stack-name udapeople-backendstack-${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
               
       - run:
@@ -173,6 +198,8 @@ jobs:
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt  configure-server.yml
+      
+      - destroy-environment
             
   run_migration:
     docker:
@@ -204,7 +231,9 @@ jobs:
            if [ migration_status -gt 0 ]
            then
              curl -H "Content-Type: text/plain" -H "token: migration-${CIRCLE_WORKFLOW_ID}" --request PUT --data "$migration_status" https://api.memstash.io/values/migrationStatus
-           fi   
+           fi  
+      
+      - destroy-environment
       
 workflows:
   default:
