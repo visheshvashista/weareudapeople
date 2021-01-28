@@ -12,6 +12,10 @@ commands:
         description: frontend stack name
         type: string
         default: udapeople-frontendstack-${CIRCLE_WORKFLOW_ID}
+      bucket-name:
+        description: frontend S3 bucket name
+        type: string
+        default: udapeople-"${CIRCLE_WORKFLOW_ID}"
     steps:
       - run:
           name: Destroy environments
@@ -19,6 +23,29 @@ commands:
           command: |
             aws cloudformation delete-stack --stack-name << parameters.frontend-stack >>
             aws cloudformation delete-stack --stack-name << parameters.backend-stack >>
+            aws s3 rm s3://<< parameters.bucket-name >> --recursive
+
+  revert-migrations:
+    description: Revert the last migration if successfully run in the current workflow.
+    parameters:
+      memstash-token:
+        description: Memstash token for migration result
+        type: string
+        default: "token:migration_${CIRCLE_WORKFLOW_ID}"     
+    steps:
+      - run:
+          name: Revert migrations
+          when: on_fail 
+          command: |
+            SUCCESS=$(curl -H "Content-Type: text/plain" -H << parameters.memstash-token >> --request GET https://api.memstash.io/values/migrationStatus)
+            if [ $SUCCESS==1 ] 
+            then
+              cd ~/project/backend
+              npm install
+              npm run migrations:revert
+            fi
+     
+ 
 jobs:
   build-frontend:
     docker:
@@ -141,7 +168,7 @@ jobs:
             pip install awscli
             
       - run:
-          name: Add back-end ip to ansible inventory and create a file for backend DNS name
+          name: Add back-end ip to ansible inventory and upload dnsname to memstash
           command: |
              echo "[web]" > .circleci/ansible/inventory.txt
                aws ec2 describe-instances \
@@ -149,6 +176,9 @@ jobs:
                --output text >> .circleci/ansible/inventory.txt
                
                aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text > dns.txt
+               dnsname=`cat dns.txt`
+               # save servername to memstash
+               curl -H "Content-Type: text/plain" -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request PUT --data "dnsname" https://api.memstash.io/values/dnsname
             
       - persist_to_workspace:
           root: ~/project
@@ -223,9 +253,42 @@ jobs:
               npm run migrations:revert
               curl -H "Content-Type: text/plain" -H "token: migration-${CIRCLE_WORKFLOW_ID}" --request PUT --data "$migration_status" https://api.memstash.io/values/migrationStatus
             else  
+              migration_status=1
               curl -H "Content-Type: text/plain" -H "token: migration-${CIRCLE_WORKFLOW_ID}" --request PUT --data "$migration_status" https://api.memstash.io/values/migrationStatus
             fi
       - destroy-environment
+  
+  deploy-frontend:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Install dependencies
+          command: |
+            yum install -y tar gzip
+            curl -sL https://rpm.nodesource.com/setup_13. | bash -
+            yum install -y nodejs
+      - run:
+          name: Get API-URL
+          command: |
+            DNSNAME=$(curl -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/dnsname)
+            API_URL="http://${DNSNAME}:3030/api/status"
+            curl -H "Content-Type: text/plain" -H "token:API_URL_${CIRCLE_WORKFLOW_ID}" --request PUT --data "$API_URL" https://api.memstash.io/values/API_URL
+            echo "API_URL: ${API_URL}"
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm install
+            npm run build
+            cd dist
+            aws s3 sync . s3://udapeople-"${CIRCLE_WORKFLOW_ID}" --delete
+      - destroy-environment
+      - revert-migrations
+      
       
 workflows:
   default:
