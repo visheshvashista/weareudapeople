@@ -177,7 +177,7 @@ jobs:
                aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text > dns.txt
                dnsname=`cat dns.txt`
                # save servername to memstash
-               curl -H "Content-Type: text/plain" -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request PUT --data "dnsname" https://api.memstash.io/values/dnsname
+               curl -H "Content-Type: text/plain" -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request PUT --data "$dnsname" https://api.memstash.io/values/dnsname
             
       - persist_to_workspace:
           root: ~/project
