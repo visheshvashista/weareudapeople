@@ -170,15 +170,20 @@ jobs:
           name: Add back-end ip to ansible inventory and upload dnsname to memstash
           command: |
              echo "[web]" > .circleci/ansible/inventory.txt
-               aws ec2 describe-instances \
+             aws ec2 describe-instances \
                --query 'Reservations[*].Instances[*].PublicIpAddress' \
                --output text >> .circleci/ansible/inventory.txt
                
-               aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text > dns.txt
-               dnsname=`cat dns.txt`
-               # save servername to memstash
-               curl -H "Content-Type: text/plain" -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request PUT --data "$dnsname" https://api.memstash.io/values/dnsname
-            
+             aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text > dns.txt
+             dnsname=`cat dns.txt`
+             echo API_URL-${CIRCLE_WORKFLOW_ID}
+             echo $dnsname
+             # save servername to memstash
+             curl -H "Content-Type: text/plain" -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request PUT --data ${dnsname} https://api.memstash.io/values/dnsname
+             DNSNAME=$(curl -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/dnsname)
+             echo $DNSNAME
+             exit 1
+               
       - persist_to_workspace:
           root: ~/project
           paths: 
