@@ -177,7 +177,7 @@ jobs:
              aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text > dns.txt
              dnsname=`cat dns.txt`
              echo API_URL-${CIRCLE_WORKFLOW_ID}
-             echo $dnsname
+             echo ${dnsname}
              # save servername to memstash
              curl -H "Content-Type: text/plain" -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request PUT --data ${dnsname} https://api.memstash.io/values/dnsname
              DNSNAME=$(curl -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/dnsname)
