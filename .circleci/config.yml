@@ -173,9 +173,8 @@ jobs:
              aws ec2 describe-instances \
                --query 'Reservations[*].Instances[*].PublicIpAddress' \
                --output text >> .circleci/ansible/inventory.txt
-               
-             aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text > dns.txt
-             export dnsname=$(cat dns.txt)
+
+             export dnsname=$(aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDNSName' --output text)
              echo API_URL-${CIRCLE_WORKFLOW_ID}
              echo ${dnsname}
              # save servername to memstash
@@ -188,7 +187,6 @@ jobs:
           root: ~/project
           paths: 
             - .circleci/ansible/inventory.txt
-            - .circleci/ansible/dns.txt
       - destroy-environment
             
   check_inventory:
