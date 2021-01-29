@@ -207,13 +207,13 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["fb:92:3b:fa:49:6c:96:aa:dd:78:39:3d:d9:a7:75:92"] # You can get this ID in the section where you registered the SSH Key
+          fingerprints: ["fb:92:3b:fa:49:6c:96:aa:dd:78:39:3d:d9:a7:75:92"]
       - attach_workspace:
           at: ~/project
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible # install the dependencies needed for your playbook
+            apk add --update ansible
       - run:
           name: Configure server
           command: |
@@ -274,7 +274,7 @@ jobs:
             curl -sL https://rpm.nodesource.com/setup_13.x | bash -
             yum install -y nodejs
       - run:
-          name: Get API-URL
+          name: Get API_URL
           command: |
             DNSNAME=$(curl -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/dnsname)
             API_URL="http://${DNSNAME}:3030/api/status"
@@ -290,7 +290,70 @@ jobs:
             aws s3 sync . s3://udapeople-"${CIRCLE_WORKFLOW_ID}" --delete
       - destroy-environment
       - revert-migrations
+	  
+    deploy-backend:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["fb:92:3b:fa:49:6c:96:aa:dd:78:39:3d:d9:a7:75:92"]
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible tar gzip nodejs npm curl
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm install
+            npm run build
+            tar -C dist -czvf backend_artifact.tar.gz .
+            mv backend_artifact.tar.gz .circleci/ansible/roles/deploy/files
+            ansible-playbook -i ~/project/.circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
+      - destroy-environment
+      - revert-migrations  
       
+  smoke-test:
+    docker:
+      - image: cimg/base:2020.01
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt install curl
+      - run:
+          name: Smoke test for frontend
+          command: |
+            export URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
+            echo "Frontend URL: $URL"
+            curl -s ${URL} > curl_frontend_output.txt
+            if [[ $(cat curl_frontend_page.txt) =~ "Welcome" ]]
+            then
+              exit 0
+            else
+              exit 1
+            fi
+      - run:
+          name: Get backend url and run smoke test
+          command: |
+            export API_URL=$(curl -H "Content-Type: text/plain" -H "token:api_url_${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/api_url)
+            echo "Backend API_URL: $API_URL"
+            if curl -s $API_URL > curl_backend_output.txt
+            then
+              exit 0
+            else
+              exit 1
+            fi
+      - destroy-environment
+      - revert-migrations
+	
+	
 workflows:
   default:
     jobs:
@@ -320,3 +383,7 @@ workflows:
           requires: [configure_infrastructure]
       - deploy-frontend:
           requires: [run_migrations]
+	  - deploy-backend:
+          requires: [run-migrations]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
