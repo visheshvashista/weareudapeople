@@ -175,13 +175,11 @@ jobs:
                --output text >> .circleci/ansible/inventory.txt
 
              dnsname=$(aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDnsName' --output text)
-             echo API_URL-${CIRCLE_WORKFLOW_ID}
-             echo ${dnsname}
+             # echo API_URL-${CIRCLE_WORKFLOW_ID}
+             # echo ${dnsname}
              # save servername to memstash
              curl -H "Content-Type: text/plain" -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request PUT --data ${dnsname} https://api.memstash.io/values/dnsname
-             DNSNAME=$(curl -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/dnsname)
-             echo $DNSNAME
-             exit 1
+             # DNSNAME=$(curl -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/dnsname)
                
       - persist_to_workspace:
           root: ~/project
@@ -292,7 +290,6 @@ jobs:
             aws s3 sync . s3://udapeople-"${CIRCLE_WORKFLOW_ID}" --delete
       - destroy-environment
       - revert-migrations
-      
       
 workflows:
   default:
