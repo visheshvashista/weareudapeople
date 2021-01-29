@@ -304,13 +304,17 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible tar gzip nodejs npm curl
+            apk -Uuv add groff less python py-pip
+            pip install awscli
+            
       - run:
           name: Deploy backend
           command: |
             cd backend
             npm install
             npm run build
-            tar -C dist -czvf backend_artifact.tar.gz .
+            tar -czvf dist backend_artifact.tar.gz
+            ls -lrt
             mv backend_artifact.tar.gz .circleci/ansible/roles/deploy/files
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
       - destroy-environment
@@ -327,6 +331,9 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt install curl
+            sudo apt install awscli
+            curl -sL https://deb.nodesource.com/setup_13.x | sudo bash -
+            sudo apt-get install -y nodejs
       - run:
           name: Smoke test for frontend
           command: |
