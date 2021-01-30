@@ -374,14 +374,15 @@ jobs:
             --no-paginate --output text)
             
             export STACKS=($aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-            --stack-status-filter CREATE_COMPLETE --no-paginate --output-text))
+            --stack-status-filter CREATE_COMPLETE --no-paginate)
+            
             echo Old Workflow Id: "${OldWorkflowID}"
 
             aws cloudformation deploy \
-            --template-file .circleci/files/cloudfront.yml
+            --template-file .circleci/files/cloudfront.yml \
             --stack-name=udapeople-cloudfront \
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
-            --tags project=udapeople &
+            --tags project=udapeople 
 
             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
@@ -389,7 +390,7 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-backendstack-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontendstack-${OldWorkflowID}"
             fi
-
+            
 workflows:
   default:
     jobs:
