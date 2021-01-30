@@ -1,0 +1,38 @@
+---
+- name: "update apt packages"
+  become: yes
+  apt:
+    update_cache: yes
+
+- name: "upgrade packages"
+  become: yes
+  apt:
+    upgrade: "yes"
+
+- name: "remove dependencies that are no longer required"
+  become: yes
+  apt:
+    autoremove: yes
+
+- name: "create directory for distribution to be deployed"
+  file:
+    path: /home/ubuntu/dist
+    state: directory
+
+- name: "copy distribution zip"
+  become: true
+  copy:
+    src: backend_artifact.tar.gz
+    dest: /home/ubuntu/dist/backend_artifact.tar.gz
+
+- name: "Unpack dist files"
+  become: true
+  shell: |
+    cd dist
+    tar -xzf backend_artifact.tar.gz
+    rm backend_artifact.tar.gz
+
+- name: Executing node
+  become: true
+  shell: |
+    pm2 start -x -i 4 --name "app" /home/ubuntu/dist/main.js
