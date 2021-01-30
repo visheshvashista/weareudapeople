@@ -27,7 +27,7 @@
 - name: "copy distribution zip"
   become: true
   copy:
-    src: .circleci/ansible/roles/deploy/files/backend_artifact.tar.gz
+    src: backend_artifact.tar.gz
     dest: /home/ubuntu/dist/backend_artifact.tar.gz
 
 - name: "Unpack dist files"
