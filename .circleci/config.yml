@@ -1,6 +1,6 @@
 version: 2.1
-
-commands:
+adasdasdas!@@@@@
+@!!commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
@@ -318,6 +318,7 @@ jobs:
             ls 
             cd ..
             mv backend/backend_artifact.tar.gz .circleci/ansible/roles/deploy/files
+            ls -lrt .circleci/ansible/roles/deploy/files
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
       - destroy-environment
       - revert-migrations  
