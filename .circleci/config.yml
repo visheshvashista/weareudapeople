@@ -340,8 +340,7 @@ jobs:
           command: |
             export URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
             echo "Frontend URL: $URL"
-            curl -s ${URL} > curl_frontend_output.txt
-            if [[ $(cat curl_frontend_output.txt) =~ "Welcome" ]]
+            if [[  curl -s ${URL} | grep "Welcome" ]]
             then
               exit 0
             else
@@ -366,31 +365,29 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-	  
-	- run:
-        name: Update cloudfront distribution
+      - run:
+          name: Update cloudfront distribution
           command: |
-		    export OldWorkflowID=$(aws cloudformation \
-			list-exports --query "Exports[?Name==\`WorkflowID`}.Value" \
-			--no-paginate --output text)
-		    
-			export STACKS=($aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-			--stack-status-filter CREATE_COMPLETE --no-paginate --output-text))
-			
-			echo Old Workflow Id: "${OldWorkflowID}"
-			
-			aws cloudformation deploy \
-			--template-file .circleci/files/cloudfront.yml
+            export OldWorkflowID=$(aws cloudformation \
+            list-exports --query "Exports[?Name==\`WorkflowID`}.Value" \
+            --no-paginate --output text)
+            
+            export STACKS=($aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+            --stack-status-filter CREATE_COMPLETE --no-paginate --output-text))
+            echo Old Workflow Id: "${OldWorkflowID}"
+
+            aws cloudformation deploy \
+            --template-file .circleci/files/cloudfront.yml
             --stack-name=udapeople-cloudfront \
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
             --tags project=udapeople &
-			
-			if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-			then
-			  aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-			  aws cloudformation delete-stack --stack-name "udapeople-backendstack-${OldWorkflowID}"
-			  aws cloudformation delete-stack --stack-name "udapeople-frontendstack-${OldWorkflowID}"
-			fi
+
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            then
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-backendstack-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontendstack-${OldWorkflowID}"
+            fi
 
 workflows:
   default:
