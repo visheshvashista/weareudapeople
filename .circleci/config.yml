@@ -349,7 +349,7 @@ jobs:
       - run:
           name: Get backend url and run smoke test
           command: |
-            export API_URL=$(curl -H "Content-Type: text/plain" -H "token:api_url_${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/api_url)
+            export API_URL=$(curl -H "Content-Type: text/plain" -H "token:API_URL_${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/API_URL)
             echo "Backend API_URL: $API_URL"
             if curl -s $API_URL > curl_backend_output.txt
             then
