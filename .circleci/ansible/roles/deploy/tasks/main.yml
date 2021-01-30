@@ -19,10 +19,15 @@
     path: /home/ubuntu/dist
     state: directory
 
+- name: "Check if distribution zip is available"
+  become: true
+  shell: |
+    ls -lrt .circleci/ansible/roles/deploy/files
+    
 - name: "copy distribution zip"
   become: true
   copy:
-    src: backend_artifact.tar.gz
+    src: .circleci/ansible/roles/deploy/files/backend_artifact.tar.gz
     dest: /home/ubuntu/dist/backend_artifact.tar.gz
 
 - name: "Unpack dist files"
