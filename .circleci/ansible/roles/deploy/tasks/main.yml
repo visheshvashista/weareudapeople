@@ -22,7 +22,7 @@
 - name: "Check if distribution zip is available"
   become: true
   shell: |
-    ls -lrt .circleci/ansible/roles/deploy/files
+    ls -lrt 
     
 - name: "copy distribution zip"
   become: true
