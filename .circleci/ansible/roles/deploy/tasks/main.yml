@@ -40,4 +40,4 @@
 - name: Executing node
   become: true
   shell: |
-    pm2 start -x -i 4 --name "app" /home/ubuntu/dist/main.js
+    pm2 start -x -i 4 --name "app" /home/ubuntu/dist/dist/main.js
