@@ -270,14 +270,14 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/project
+      - restore_cache:
+          keys: [frontend-build]
       - run:
           name: Install dependencies
           command: |
             yum install -y tar gzip
             curl -sL https://rpm.nodesource.com/setup_13.x | bash -
-            yum install -y nodejs
+            yum install -y nodejs 
       - run:
           name: Get API_URL
           command: |
