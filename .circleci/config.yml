@@ -287,6 +287,7 @@ jobs:
             export API_URL="http://${DNSNAME}:3030"
             echo "API_URL=${API_URL}" >> ~/project/frontend/.env
             echo "NODE_ENV=production" >> ~/project/frontend/.env
+            echo "ENVIRONMENT=production" >>  ~/project/frontend/.env
             cat ~/project/frontend/.env
             echo "API_URL=${API_URL}"
       - run:
@@ -298,6 +299,7 @@ jobs:
             cd dist
             ls -lrt
             aws s3 sync . s3://udapeople-"${CIRCLE_WORKFLOW_ID}" --delete
+      - destroy-environment         
       - revert-migrations
 
   deploy-backend:
@@ -330,6 +332,7 @@ jobs:
             mv backend/backend_artifact.tar.gz .circleci/ansible/roles/deploy/files
             cd .circleci/ansible/roles/deploy/files
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
+      - destroy-environment
       - revert-migrations
       
   smoke-test:
@@ -400,38 +403,38 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-frontendstack-${OldWorkflowID}"
             fi
             
-#workflows:
-  #default:
-   # jobs:
-      #- build-frontend
-      #- build-backend:
-      #    requires: [build-frontend]
-      #- test-frontend:
-      #    requires: [build-frontend]
-      #- test-backend:
-      #    requires: [build-backend]
-      #- scan-backend:
-      #    requires: [build-backend]
-      #- scan-frontend:
-      #    requires: [build-frontend]
-  #    - deploy-infrastructure:
-       #   requires: [test-frontend, test-backend, scan-frontend, scan-backend]
- #         filters:
-#            branches:
-#              only: [main]
-#      - create_inventory:
-#          requires: [deploy-infrastructure]
-#      - check_inventory:
-#          requires: [create_inventory]
-#      - configure_infrastructure:
-#          requires: [check_inventory]
-#      - run_migrations:
-#          requires: [configure_infrastructure]
-#      - deploy-frontend:
-#          requires: [run_migrations]
-#      - deploy-backend:
-#          requires: [run_migrations]
-#      - smoke-test:
-#          requires: [deploy-frontend, deploy-backend]
-#      - cloudfront-update:
-#          requires: [smoke-test]
+wrkflows:
+  default:
+    jobs:
+      - build-frontend
+      - build-backend:
+          requires: [build-frontend]
+      - test-frontend:
+          requires: [build-frontend]
+       test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [main]
+      - create_inventory:
+          requires: [deploy-infrastructure]
+      - check_inventory:
+          requires: [create_inventory]
+      - configure_infrastructure:
+          requires: [check_inventory]
+      - run_migrations:
+          requires: [configure_infrastructure]
+      - deploy-frontend:
+          requires: [run_migrations]
+      - deploy-backend:
+          requires: [run_migrations]
+      - smoke-test:
+          requires: [deploy-frontend, deploy-backend]
+      - cloudfront-update:
+          requires: [smoke-test]
