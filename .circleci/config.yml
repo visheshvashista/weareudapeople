@@ -176,12 +176,8 @@ jobs:
                --output text >> .circleci/ansible/inventory.txt
 
              dnsname=$(aws ec2 describe-instances --filter Name=tag:aws:cloudformation:stack-name,Values=udapeople-backendstack* Name=instance-state-name,Values=running --query 'Reservations[*].Instances[*].PublicDnsName' --output text)
-             # echo API_URL-${CIRCLE_WORKFLOW_ID}
-             # echo ${dnsname}
-             # save servername to memstash
-             curl -H "Content-Type: text/plain" -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request PUT --data ${dnsname} https://api.memstash.io/values/dnsname
-             # DNSNAME=$(curl -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/dnsname)
-               
+             curl -H "Content-Type: text/plain" -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request PUT --data ${dnsname} https://api.memstash.io/values/dnsname               
+  
       - persist_to_workspace:
           root: ~/project
           paths: 
@@ -274,8 +270,8 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - restore_cache:
-          keys: [frontend-build]
+      - attach_workspace:
+          at: ~/project
       - run:
           name: Install dependencies
           command: |
@@ -288,7 +284,10 @@ jobs:
             DNSNAME=$(curl -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/dnsname)
             API_URL="http://${DNSNAME}:3030"
             curl -H "Content-Type: text/plain" -H "token:API_URL_${CIRCLE_WORKFLOW_ID}" --request PUT --data "$API_URL" https://api.memstash.io/values/API_URL
-            echo "API_URL=${API_URL}" >> frontend/.env
+            export API_URL="http://${DNSNAME}:3030"
+            echo "API_URL=${API_URL}" >> ~/project/frontend/.env
+            echo "NODE_ENV=production" >> ~/project/frontend/.env
+            cat /frontend/.env
             echo "API_URL=${API_URL}"
       - run:
           name: Deploy frontend objects
@@ -318,14 +317,13 @@ jobs:
           command: |
             apk add --update ansible tar gzip nodejs npm curl
             apk -Uuv add groff less python py-pip
-            pip install awscli
-            
+            pip install awscli            
       - run:
           name: Deploy backend
           command: |
             cd backend
             npm install
-            npm run build
+            npm run build --prod
             ls -lrt
             tar -czvf backend_artifact.tar.gz dist
             ls 
