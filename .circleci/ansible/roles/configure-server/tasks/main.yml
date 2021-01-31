@@ -22,15 +22,21 @@
   become: yes
   become_method: sudo
   apt:
-    name: ["nodejs", "npm"]
+    name: ["npm"]
     state: latest
     update_cache: yes
 
-- name: Install nest.js
-  npm:
-    name: nestjs
-    state: latest
-    update_cache: yes
+- name: "install n"
+    become: yes
+    npm:
+      name: n
+      global: yes
+      production: yes
+
+- name: "Install node version 13.x"
+  shell: |
+    curl -sL https://rpm.nodesource.com/setup_13.x | sudo -E bash -
+    sudo apt install -y nodejs
 
 - name: "install pm2"
   become: yes
