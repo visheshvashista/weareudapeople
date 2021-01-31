@@ -286,7 +286,7 @@ jobs:
           name: Get API_URL
           command: |
             DNSNAME=$(curl -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/dnsname)
-            API_URL="http://${DNSNAME}:3030/api/status"
+            API_URL="http://${DNSNAME}:3030"
             curl -H "Content-Type: text/plain" -H "token:API_URL_${CIRCLE_WORKFLOW_ID}" --request PUT --data "$API_URL" https://api.memstash.io/values/API_URL
             echo "API_URL: ${API_URL}" >> frontend/.env
       - run:
