@@ -27,11 +27,11 @@
     update_cache: yes
 
 - name: "install n"
-    become: yes
-    npm:
-      name: n
-      global: yes
-      production: yes
+  become: yes
+  npm:
+    name: n
+    global: yes
+    production: yes
 
 - name: "Install node version 13.x"
   shell: |
