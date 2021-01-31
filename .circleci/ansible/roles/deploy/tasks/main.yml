@@ -14,11 +14,6 @@
   apt:
     autoremove: yes
 
-- name: "create directory for distribution to be deployed"
-  file:
-    path: /home/ubuntu/dist
-    state: directory
-
 - name: "Check if distribution zip is available"
   become: true
   shell: |
@@ -28,16 +23,15 @@
   become: true
   copy:
     src: backend_artifact.tar.gz
-    dest: /home/ubuntu/dist/backend_artifact.tar.gz
+    dest: backend_artifact.tar.gz
 
 - name: "Unpack dist files"
   become: true
   shell: |
-    cd dist
     tar -xzf backend_artifact.tar.gz
     rm backend_artifact.tar.gz
 
 - name: Executing node
   become: true
   shell: |
-    pm2 start -x -i 4 --name "app" /home/ubuntu/dist/dist/main.js
+    pm2 start -x -i 4 --name "app" /home/ubuntu/dist/main.js
