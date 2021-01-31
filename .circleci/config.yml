@@ -288,7 +288,8 @@ jobs:
             DNSNAME=$(curl -H "token: API_URL-${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/dnsname)
             API_URL="http://${DNSNAME}:3030"
             curl -H "Content-Type: text/plain" -H "token:API_URL_${CIRCLE_WORKFLOW_ID}" --request PUT --data "$API_URL" https://api.memstash.io/values/API_URL
-            echo "API_URL: ${API_URL}" >> frontend/.env
+            echo "API_URL=${API_URL}" >> frontend/.env
+            echo "API_URL=${API_URL}"
       - run:
           name: Deploy frontend objects
           command: |
@@ -296,6 +297,7 @@ jobs:
             npm install
             npm run build
             cd dist
+            ls -lrt
             aws s3 sync . s3://udapeople-"${CIRCLE_WORKFLOW_ID}" --delete
       - destroy-environment
       - revert-migrations
@@ -309,6 +311,8 @@ jobs:
           fingerprints: ["fb:92:3b:fa:49:6c:96:aa:dd:78:39:3d:d9:a7:75:92"]
       - attach_workspace:
           at: ~/project
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Install dependencies
           command: |
