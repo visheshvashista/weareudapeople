@@ -13,15 +13,7 @@
   become: yes
   apt:
     autoremove: yes
-
-- name: "Check if distribution zip is available"
-  become: true
-  shell: |
-    ls -lrt
-    node -v
-    npm -v
-    npm i -g @nestjs/cli
-        
+      
 - name: "copy distribution zip"
   become: true
   copy:
