@@ -400,9 +400,9 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-frontendstack-${OldWorkflowID}"
             fi
             
-workflows:
-  default:
-    jobs:
+#workflows:
+  #default:
+   # jobs:
       #- build-frontend
       #- build-backend:
       #    requires: [build-frontend]
@@ -414,23 +414,23 @@ workflows:
       #    requires: [build-backend]
       #- scan-frontend:
       #    requires: [build-frontend]
-      - deploy-infrastructure:
+  #    - deploy-infrastructure:
        #   requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [main]
-      - create_inventory:
-          requires: [deploy-infrastructure]
-      - check_inventory:
-          requires: [create_inventory]
-      - configure_infrastructure:
-          requires: [check_inventory]
-      - run_migrations:
-          requires: [configure_infrastructure]
-      - deploy-frontend:
-          requires: [run_migrations]
-      - deploy-backend:
-          requires: [run_migrations]
+ #         filters:
+#            branches:
+#              only: [main]
+#      - create_inventory:
+#          requires: [deploy-infrastructure]
+#      - check_inventory:
+#          requires: [create_inventory]
+#      - configure_infrastructure:
+#          requires: [check_inventory]
+#      - run_migrations:
+#          requires: [configure_infrastructure]
+#      - deploy-frontend:
+#          requires: [run_migrations]
+#      - deploy-backend:
+#          requires: [run_migrations]
 #      - smoke-test:
 #          requires: [deploy-frontend, deploy-backend]
 #      - cloudfront-update:
