@@ -270,14 +270,14 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - restore_cache:
-          keys: [frontend-build]
       - run:
           name: Install dependencies
           command: |
             yum install -y tar gzip
             curl -sL https://rpm.nodesource.com/setup_13.x | bash -
             yum install -y nodejs 
+      - attach_workspace:
+          at: ~/project
       - run:
           name: Get API_URL
           command: |
@@ -287,7 +287,7 @@ jobs:
             export API_URL="http://${DNSNAME}:3030"
             echo "API_URL=${API_URL}" >> ~/project/frontend/.env
             echo "NODE_ENV=production" >> ~/project/frontend/.env
-            cat ~/frontend/.env
+            cat ~/project/frontend/.env
             echo "API_URL=${API_URL}"
       - run:
           name: Deploy frontend objects
@@ -433,7 +433,7 @@ workflows:
           requires: [run_migrations]
       - deploy-backend:
           requires: [run_migrations]
-      - smoke-test:
-          requires: [deploy-frontend, deploy-backend]
-      - cloudfront-update:
-          requires: [smoke-test]
+#      - smoke-test:
+#          requires: [deploy-frontend, deploy-backend]
+#      - cloudfront-update:
+#          requires: [smoke-test]
