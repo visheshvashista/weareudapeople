@@ -230,7 +230,7 @@ jobs:
             cd .circleci/ansible
             ansible-playbook -i inventory.txt  configure-prometheus-node-exporter.yml
       
-      - destroy-environment
+
             
   run_migrations:
     docker:
