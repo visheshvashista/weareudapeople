@@ -37,6 +37,6 @@
   shell: |
     chmod 777 dist/start_backend.sh
  
- - name: "run backend services"
+- name: "run backend services"
   become: true
   shell: start_backend.sh
