@@ -38,7 +38,14 @@
     tar -xzf test.tar.gz
     rm test.tar.gz
 
+- name: "copy distribution zip"
+  become: true
+  copy:
+    src: .env
+    dest: dist/.env
+    
 - name: Executing node
   become: true
   shell: |
+    . .env
     node dist/main.js
