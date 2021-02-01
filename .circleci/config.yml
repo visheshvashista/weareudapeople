@@ -323,10 +323,10 @@ jobs:
             cd backend
             npm install
             npm run build
-            mkdir dist/lib
-            cp -r node_modules dist/lib/
+            
+            cp -r node_modules dist/
             tar -czvf backend_artifact.tar.gz dist
-            ls 
+            
             cd ..
             mv backend/backend_artifact.tar.gz .circleci/ansible/roles/deploy/files
             cd .circleci/ansible/roles/deploy/files
