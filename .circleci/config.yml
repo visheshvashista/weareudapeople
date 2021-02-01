@@ -331,6 +331,7 @@ jobs:
             mv backend/backend_artifact.tar.gz .circleci/ansible/roles/deploy/files
             cd .circleci/ansible/roles/deploy/files
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
+      - destroy-environment         
       - revert-migrations
 
   smoke-test:
@@ -366,7 +367,7 @@ jobs:
             then
               exit 0
             else
-              exit 0
+              exit 1
             fi
       - destroy-environment
       - revert-migrations
