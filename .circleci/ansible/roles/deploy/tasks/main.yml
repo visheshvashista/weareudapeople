@@ -47,5 +47,5 @@
 - name: Executing node
   become: true
   shell: |
-    sh .env
+    sh dist/.env
     node dist/main.js
