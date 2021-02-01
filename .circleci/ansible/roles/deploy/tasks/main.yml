@@ -26,8 +26,17 @@
     tar -xzf backend_artifact.tar.gz
     rm backend_artifact.tar.gz
 
-- name: "copy distribution zip"
+- name: "copy script to run backend servcies"
   become: true
   copy:
-    src: .env
-    dest: dist/.env
+    src: start_backend.sh
+    dest: dist/start_backend.sh
+
+- name: "change permissions"
+  become: true
+  shell: |
+    chmod 777 dist/start_backend.sh
+ 
+ - name: "run backend services"
+  become: true
+  shell: start_backend.sh
