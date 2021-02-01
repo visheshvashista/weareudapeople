@@ -324,8 +324,7 @@ jobs:
           command: |
             cd backend
             npm install
-            npm run build --prod
-            ls -lrt
+            npm run build
             mkdir dist/lib
             cp -r node_modules dist/lib/
             tar -czvf backend_artifact.tar.gz dist
