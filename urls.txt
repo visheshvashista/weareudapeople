@@ -1,0 +1,19 @@
+1. GitHub repository: 
+
+     https://github.com/visheshvashista/weareudapeople/
+
+2. S3 Bucket:
+   
+     udapeople-e186e21a-4b22-4c37-9ea7-7e6d69ed3a48.s3.us-west-2.amazonaws.com
+
+3. CloudFront distribution:
+     
+	 http://dh7t1s5x4kswi.cloudfront.net
+
+4. Backend URL:
+     
+	 http://ec2-35-166-130-196.us-west-2.compute.amazonaws.com:3030/api/status
+
+5. Promometheus Server
+
+     http://ec2-18-236-133-48.us-west-2.compute.amazonaws.com:9090/targets
