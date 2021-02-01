@@ -39,4 +39,5 @@
  
 - name: "run backend services"
   become: true
-  shell: start_backend.sh
+  shell: |
+    start_backend.sh
