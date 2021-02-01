@@ -290,15 +290,13 @@ jobs:
             echo "ENVIRONMENT=production" >>  ~/project/frontend/.env
             cat ~/project/frontend/.env
             echo "API_URL=${API_URL}"
-      - run:
-          name: Deploy frontend objects
-          command: |
-            cd frontend
+            cd ~/project/frontend
             npm install
             npm run build
             cd dist
             ls -lrt
             aws s3 sync . s3://udapeople-"${CIRCLE_WORKFLOW_ID}" --delete
+
       - destroy-environment         
       - revert-migrations
 
