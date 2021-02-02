@@ -133,6 +133,7 @@ jobs:
           name: Backend vulnerability scan
           command: |
             cd backend
+            npm i --package-lock-only
             npm audit fix --audit-level=critical --force
             
   deploy-infrastructure:
