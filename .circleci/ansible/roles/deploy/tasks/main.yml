@@ -40,4 +40,4 @@
 - name: "run backend services"
   become: true
   shell: |
-   sudo sh dist/start_backend.sh
+    sh dist/start_backend.sh
