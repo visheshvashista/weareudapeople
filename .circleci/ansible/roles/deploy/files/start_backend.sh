@@ -9,4 +9,4 @@ export TYPEORM_USERNAME=postgres
 export TYPEORM_PASSWORD=test1234
 export TYPEORM_DATABASE=postgres
 
-nohup node main.js &
+nohup node ~/dist/main.js &
