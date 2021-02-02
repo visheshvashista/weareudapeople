@@ -40,4 +40,4 @@
 - name: "run backend services"
   become: true
   shell: |
-    sh dist/start_backend.sh
+    sh -x dist/start_backend.sh
